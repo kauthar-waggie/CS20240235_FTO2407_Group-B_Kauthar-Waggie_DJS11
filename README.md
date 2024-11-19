@@ -1,3 +1,12 @@
+# React + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
 # 🎵 PODCAST APP | PORTFOLIO PIECE 💿
 [DJS11] Starter Instructions for the Final Portfolio Piece Submission 🚀
 
@@ -7,9 +16,9 @@
 
 - [🤖 Technology](#-technology)
 - [📦Data](#data)
-	- [Relationships](#relationships)
-	- [Endpoints](#endpoints)
-	- [Genre Titles](#genre-titles)
+    - [Relationships](#relationships)
+    - [Endpoints](#endpoints)
+    - [Genre Titles](#genre-titles)
 - [🧑 User Stories](#user-stories)
 
 ## 🤖 Technology
@@ -46,37 +55,37 @@ PREVIEW {
     number id
     string title
     string description
-		number seasons
-		string image
-		array genreIds
-		updated string
+        number seasons
+        string image
+        array genreIds
+        updated string
 }
 
 SHOW {
     number id
     string title
     string description
-		array seasons
+        array seasons
 }
 
 SEASON {
   number id
-	string title
-	string image
-	array episodes
+    string title
+    string image
+    array episodes
 }
 
 EPISODE {
-	number id
-	string file
-	string title
+    number id
+    string file
+    string title
 }
 
 GENRE {
-	number id
-	string title
-	string description
-	array showIds
+    number id
+    string title
+    string description
+    array showIds
 }
 
 PREVIEW ||--|| SHOW: id___id

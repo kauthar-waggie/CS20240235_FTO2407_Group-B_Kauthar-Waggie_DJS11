@@ -1,121 +1,152 @@
-/* General Styles */
+/* body */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f9f9f9;
-    color: #333;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  color: #333;  
+}
+  
+h1 {
+  text-align: center;
+  font-size: 2rem;
+  margin: 20px 0;
+}  
+  
+.home-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+  
+.podcast-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+  
+.filter-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+}
+  
+.search-bar {
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 50%;
+}
+  
+.sort-container {
+  display: flex;
+  align-items: center;
+}
+  
+.sort-container label {
+  margin-right: 10px;
+  font-size: 1rem;
+}
+  
+.sort-dropdown {
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+  
+.podcast-card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+  
+.podcast-card:hover {
+  transform: translateY(-5px);  
+}   
+  
+.podcast-card img {  
+  width: 100%;  
+  height: auto;  
+  border-radius: 8px;  
+  max-width: 150px;  
+  object-fit: cover;  
+}  
+  
+.podcast-card h2 {
+  font-size: 1.4rem;
+  color: #6200ea;
+  margin: 10px 0;
+}
+  
+.podcast-card p {
+  color: #666;
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+}
+  
+.view-details-link {
+  display: inline-block;
+  color: #6200ea;
+  text-decoration: none;
+  margin-top: 10px;
+  font-size: 1rem;
+}
+  
+.view-details-link:hover {
+  text-decoration: underline;
+}
+  
+@media (max-width: 768px) {
+  .home-container {
+    padding: 15px;
   }
   
   h1 {
-    text-align: center;
-    font-size: 2rem;
-    margin: 20px 0;
-  }
-  
-  .home-container {
-    padding: 20px;
-    max-width: 1200px;
-    margin: auto;
-  }
-  
-  .podcast-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
+    font-size: 1.8rem;
   }
   
   .podcast-card {
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    transition: transform 0.3s ease;
-  }
-  
-  .podcast-card:hover {
-    transform: translateY(-5px);
+    padding: 10px;
   }
   
   .podcast-card img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    max-width: 150px;
-    object-fit: cover;
+    max-width: 120px;
   }
   
   .podcast-card h2 {
-    font-size: 1.4rem;
-    color: #6200ea;
-    margin: 10px 0;
+    font-size: 1.2rem;
   }
   
   .podcast-card p {
-    color: #666;
-    margin-bottom: 10px;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
+  }
+}
+  
+@media (max-width: 480px) {
+  h1 {
+   font-size: 1.5rem;
   }
   
-  .view-details-link {
-    display: inline-block;
-    color: #6200ea;
-    text-decoration: none;
-    margin-top: 10px;
-    font-size: 1rem;
+  .podcast-card img {
+    max-width: 100px;
   }
   
-  .view-details-link:hover {
-    text-decoration: underline;
+  .podcast-card h2 {
+   font-size: 1rem;
   }
   
-  /* Media Queries */
-  @media (max-width: 768px) {
-    .home-container {
-      padding: 15px;
-    }
-  
-    h1 {
-      font-size: 1.8rem;
-    }
-  
-    .podcast-card {
-      padding: 10px;
-    }
-  
-    .podcast-card img {
-      max-width: 120px;
-    }
-  
-    .podcast-card h2 {
-      font-size: 1.2rem;
-    }
-  
-    .podcast-card p {
-      font-size: 0.85rem;
-    }
+  .podcast-card p {
+    font-size: 0.8rem;
   }
-  
-  @media (max-width: 480px) {
-    h1 {
-      font-size: 1.5rem;
-    }
-  
-    .podcast-card img {
-      max-width: 100px;
-    }
-  
-    .podcast-card h2 {
-      font-size: 1rem;
-    }
-  
-    .podcast-card p {
-      font-size: 0.8rem;
-    }
-  }
+}
   

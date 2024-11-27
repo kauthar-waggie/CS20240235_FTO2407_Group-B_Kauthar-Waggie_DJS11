@@ -4,6 +4,7 @@ import Home from './Home';
 import ShowDetails from './ShowDetails';
 import Genre from './Genre';
 import './App.css';
+import SeasonDetails from './SeasonDetails';
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/show/:id" element={<ShowDetails />} />
             <Route path="/genre/:id" element={<Genre />} />
+            <Route path="/show/:showId/season/:seasonNumber" element={<SeasonDetails />} />
           </Routes>
         </BrowserRouter>
       </main>

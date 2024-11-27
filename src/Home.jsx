@@ -8,70 +8,84 @@ const Home = () => {
   const [filteredShows, setFilteredShows] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("a-z");
+  const [selectedGenre, setSelectedGenre] = useState(""); 
+  const [genres, setGenres] = useState([]); 
   const [selectedSeason, setSelectedSeason] = useState(null);
   const [selectedShow, setSelectedShow] = useState(null);
   const [seasonEpisodes, setSeasonEpisodes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const formatDate = (isoString) => {
     const date = new Date(isoString);
-    return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    return date.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   };
 
+  // Fetch previews and extract genres
   useEffect(() => {
     fetchPreviews()
       .then((data) => {
         const sortedData = data.sort((a, b) => a.title.localeCompare(b.title));
         setPreviews(sortedData);
         setFilteredShows(sortedData);
+
+        // Extract unique genres
+        const uniqueGenres = Array.from(
+          new Set(data.flatMap((show) => show.genres))
+        );
+        setGenres(uniqueGenres);
       })
       .catch((error) => console.error("Error fetching previews:", error));
   }, []);
 
+  // Filter and sort shows based on search term, genre, and sort option
   useEffect(() => {
-    let sorted;
+    let filtered = [...previews];
+
+    if (searchTerm) {
+      filtered = filtered.filter((preview) =>
+        preview.title.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (selectedGenre) {
+      filtered = filtered.filter((preview) =>
+        preview.genres.includes(selectedGenre)
+      );
+    }
+
     switch (sortOption) {
       case "a-z":
-        sorted = [...previews].sort((a, b) => a.title.localeCompare(b.title));
+        filtered.sort((a, b) => a.title.localeCompare(b.title));
         break;
       case "z-a":
-        sorted = [...previews].sort((a, b) => b.title.localeCompare(a.title));
+        filtered.sort((a, b) => b.title.localeCompare(a.title));
         break;
       case "most-viewed":
-        sorted = [...previews].sort((a, b) => b.views - a.views);
+        filtered.sort((a, b) => b.views - a.views);
         break;
       default:
-        sorted = [...previews];
+        break;
     }
-    setFilteredShows(sorted);
-  }, [sortOption, previews]);
 
-  const handleSearch = (event) => {
-    const term = event.target.value.toLowerCase();
-    setSearchTerm(term);
-
-    const filtered = previews.filter((preview) =>
-      preview.title.toLowerCase().includes(term)
-    );
     setFilteredShows(filtered);
-  };
-
-  const handleSort = (option) => {
-    setSortOption(option);
-  };
+  }, [searchTerm, selectedGenre, sortOption, previews]);
 
   const handleSeasonSelect = async (showId, seasonIndex) => {
     setSelectedShow(showId);
     setSelectedSeason(seasonIndex);
-    
+
     try {
       const episodes = await fetchSeasonEpisodes(showId, seasonIndex);
-      setSeasonEpisodes(episodes); // Update the state with the episodes for the selected season
-      setIsModalOpen(true); // Open the modal to show the episodes
+      setSeasonEpisodes(episodes);
+      setIsModalOpen(true);
     } catch (error) {
       console.error("Error fetching episodes:", error);
     }
   };
-  
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -82,21 +96,38 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <h1> Shows</h1>
+      <h1>Shows</h1>
+
+      {/* Filters */}
       <div className="filter-container">
         <input
           type="text"
           placeholder="Search for a show..."
           value={searchTerm}
-          onChange={handleSearch}
+          onChange={(e) => setSearchTerm(e.target.value)}
           className="search-bar"
         />
+        <div className="genre-filter">
+          <label htmlFor="genre">Filter by Genre:</label>
+          <select
+            id="genre"
+            value={selectedGenre}
+            onChange={(e) => setSelectedGenre(e.target.value)}
+          >
+            <option value="">All Genres</option>
+            {genres.map((genre) => (
+              <option key={genre} value={genre}>
+                {genre}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="sort-container">
           <label htmlFor="sort">Sort By:</label>
           <select
             id="sort"
             value={sortOption}
-            onChange={(e) => handleSort(e.target.value)}
+            onChange={(e) => setSortOption(e.target.value)}
             className="sort-dropdown"
           >
             <option value="a-z">Alphabetical (A-Z)</option>
@@ -105,6 +136,8 @@ const Home = () => {
           </select>
         </div>
       </div>
+
+      {/* Shows Grid */}
       <div className="podcast-grid">
         {filteredShows.map((preview) => (
           <div key={preview.id} className="podcast-card">
@@ -112,19 +145,19 @@ const Home = () => {
             <div className="podcast-details">
               <h2>{preview.title}</h2>
               <p>{preview.description}</p>
-              <p>Seasons: {preview.seasons}</p> {/* Total number of seasons */}
-              <p>Last Updated: {formatDate(preview.updated)}</p> {/* Human-readable date */}
+              <p>Genres: {preview.genres.join(", ")}</p>
+              <p>Seasons: {preview.seasons}</p>
+              <p>Last Updated: {formatDate(preview.updated)}</p>
               <div className="seasons-list">
                 {[...Array(preview.seasons).keys()].map((_, index) => (
                   <button
-                    key={`${preview.id}-season-${index}`} // Unique key based on preview.id and season index
-                    onClick={() => handleSeasonSelect(preview.id, index )} // No "+1" needed here
+                    key={`${preview.id}-season-${index}`}
+                    onClick={() => handleSeasonSelect(preview.id, index)}
                   >
                     Season {index + 1}
                   </button>
                 ))}
               </div>
-
               <Link to={`/show/${preview.id}`} className="view-details-link">
                 Listen
               </Link>
@@ -147,17 +180,17 @@ const Home = () => {
             <div className="episodes-list">
               {seasonEpisodes.length > 0 ? (
                 seasonEpisodes.map((episode) => (
-                  <div key={episode.id} className="episode-card"> 
+                  <div key={episode.id} className="episode-card">
                     <h3>{episode.title}</h3>
-                      <a 
-                        href={episode.file}  
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                      >
-                        Listen to Episode
-                      </a>
+                    <a
+                      href={episode.file}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Listen to Episode
+                    </a>
                   </div>
-               ))
+                ))
               ) : (
                 <p>Loading episodes...</p>
               )}

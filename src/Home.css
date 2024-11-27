@@ -94,6 +94,37 @@ h1 {
   font-size: 0.95rem;
 }
 
+.shows-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.show-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1rem;
+  max-width: 300px;
+  text-align: center;
+}
+
+.show-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.show-card h3 {
+  margin: 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.show-card p {
+  margin: 0.3rem 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;

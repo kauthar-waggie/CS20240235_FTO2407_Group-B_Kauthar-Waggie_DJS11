@@ -93,7 +93,35 @@ h1 {
   margin-bottom: 10px;
   font-size: 0.95rem;
 }
-  
+
+.seasons-list {
+  margin-top: 10px;
+}
+
+.seasons-list button {
+  margin-right: 10px;
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.seasons-list button:hover {
+  background-color: #0056b3;
+}
+
+.season-episodes {
+  margin-top: 20px;
+}
+
+.episode-card {
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin: 10px 0;
+}
+
 .view-details-link {
   display: inline-block;
   color: #6200ea;

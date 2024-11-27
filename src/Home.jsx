@@ -8,6 +8,9 @@ const Home = () => {
   const [filteredShows, setFilteredShows] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("a-z"); // Default sort
+  const [selectedSeason, setSelectedSeason] = useState(null); // Track selected season
+  const [selectedShow, setSelectedShow] = useState(null); // Track selected show
+  
 
   useEffect(() => {
     // Fetches data and sort alphabetically by default
@@ -51,9 +54,11 @@ const Home = () => {
     setSortOption(option); // Trigger sorting when the dropdown changes
   };
 
+  
+
   return (
     <div className="home-container">
-      <h1>Podcast Shows</h1>
+      <h1>Shows</h1>
       <div className="filter-container">
         <input
           type="text"

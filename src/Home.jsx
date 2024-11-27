@@ -12,6 +12,10 @@ const Home = () => {
   const [selectedShow, setSelectedShow] = useState(null);
   const [seasonEpisodes, setSeasonEpisodes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const formatDate = (isoString) => {
+    const date = new Date(isoString);
+    return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  };
 
   useEffect(() => {
     fetchPreviews()
@@ -57,16 +61,17 @@ const Home = () => {
 
   const handleSeasonSelect = async (showId, seasonIndex) => {
     setSelectedShow(showId);
-    setSelectedSeason(seasonIndex); // Set selected season
-
+    setSelectedSeason(seasonIndex);
+    
     try {
       const episodes = await fetchSeasonEpisodes(showId, seasonIndex);
-      setSeasonEpisodes(episodes); // Update the state with the retrieved episodes
-      setIsModalOpen(true); // Open the modal
+      setSeasonEpisodes(episodes); // Update the state with the episodes for the selected season
+      setIsModalOpen(true); // Open the modal to show the episodes
     } catch (error) {
       console.error("Error fetching episodes:", error);
     }
   };
+  
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -77,7 +82,7 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <h1>Podcast Shows</h1>
+      <h1> Shows</h1>
       <div className="filter-container">
         <input
           type="text"
@@ -108,11 +113,12 @@ const Home = () => {
               <h2>{preview.title}</h2>
               <p>{preview.description}</p>
               <p>Seasons: {preview.seasons}</p> {/* Total number of seasons */}
+              <p>Last Updated: {formatDate(preview.updated)}</p> {/* Human-readable date */}
               <div className="seasons-list">
                 {[...Array(preview.seasons).keys()].map((_, index) => (
                   <button
                     key={`${preview.id}-season-${index}`} // Unique key based on preview.id and season index
-                    onClick={() => handleSeasonSelect(preview.id, index)} // No "+1" needed here
+                    onClick={() => handleSeasonSelect(preview.id, index )} // No "+1" needed here
                   >
                     Season {index + 1}
                   </button>

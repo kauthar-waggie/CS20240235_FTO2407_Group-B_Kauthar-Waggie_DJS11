@@ -32,7 +32,6 @@ const Home = () => {
         setPreviews(sortedData);
         setFilteredShows(sortedData);
 
-        // Extract unique genres
         const uniqueGenres = Array.from(
           new Set(data.flatMap((show) => show.genres))
         );

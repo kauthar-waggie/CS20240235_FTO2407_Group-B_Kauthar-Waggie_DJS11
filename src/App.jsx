@@ -8,24 +8,24 @@ import SeasonDetails from './SeasonDetails';
 
 const App = () => {
   return (
-    <div>
-      <header>
-        <h1>Podcast App</h1>
-      </header>
-      <main>
-      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <BrowserRouter>
+      <div>
+        <header>
+          <h1>Podcast App</h1>
+        </header>
+        <main>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/show/:id" element={<ShowDetails />} />
             <Route path="/genre/:id" element={<Genre />} />
             <Route path="/show/:showId/season/:seasonNumber" element={<SeasonDetails />} />
           </Routes>
-        </BrowserRouter>
-      </main>
-      <footer>
-        <p>&copy; 2024 Podcast App. All rights reserved.</p>
-      </footer>
-    </div>
+        </main>
+        <footer>
+          <p>&copy; 2024 Podcast App. All rights reserved.</p>
+        </footer>
+      </div>
+    </BrowserRouter>
   );
 };
 

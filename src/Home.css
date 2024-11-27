@@ -94,6 +94,21 @@ h1 {
   font-size: 0.95rem;
 }
 
+.back-to-show-btn {
+  padding: 10px 15px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.back-to-show-btn:hover {
+  background-color: #0056b3;
+}
+
 .shows-list {
   display: flex;
   flex-wrap: wrap;

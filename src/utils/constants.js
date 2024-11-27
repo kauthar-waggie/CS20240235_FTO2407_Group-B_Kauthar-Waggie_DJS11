@@ -1,8 +1,7 @@
-export const genreTitles = {
-    1: "True Crime",
-    2: "Comedy",
-    3: "Drama",
-    4: "Horror",
-    5: "Romance"
-  };
+export const GENRE_MAP = {
+  1: "True Crime",
+  2: "Documentary",
+  3: "Comedy",
+  4: "Drama",
+};
   

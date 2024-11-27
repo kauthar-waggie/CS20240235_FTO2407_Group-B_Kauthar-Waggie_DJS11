@@ -3,7 +3,6 @@ import { fetchPreviews, fetchSeasonEpisodes } from '../src/utils/api';
 import { Link } from 'react-router-dom';
 import './Home.css';
 
-
 const Home = () => {
   const [previews, setPreviews] = useState([]);
   const [filteredShows, setFilteredShows] = useState([]);
@@ -56,14 +55,14 @@ const Home = () => {
     setSortOption(option);
   };
 
-  const handleSeasonSelect = async (showId, seasonNumber) => {
+  const handleSeasonSelect = async (showId, seasonIndex) => {
     setSelectedShow(showId);
-    setSelectedSeason(seasonNumber);
-    setIsModalOpen(true);
+    setSelectedSeason(seasonIndex); // Set selected season
 
     try {
-      const episodes = await fetchSeasonEpisodes(showId, seasonNumber); // Fetch episodes for the selected season
-      setSeasonEpisodes(episodes);
+      const episodes = await fetchSeasonEpisodes(showId, seasonIndex);
+      setSeasonEpisodes(episodes); // Update the state with the retrieved episodes
+      setIsModalOpen(true); // Open the modal
     } catch (error) {
       console.error("Error fetching episodes:", error);
     }
@@ -112,13 +111,14 @@ const Home = () => {
               <div className="seasons-list">
                 {[...Array(preview.seasons).keys()].map((_, index) => (
                   <button
-                    key={index}
-                    onClick={() => handleSeasonSelect(preview.id, index + 1)}
+                    key={`${preview.id}-season-${index}`} // Unique key based on preview.id and season index
+                    onClick={() => handleSeasonSelect(preview.id, index)} // No "+1" needed here
                   >
                     Season {index + 1}
                   </button>
                 ))}
               </div>
+
               <Link to={`/show/${preview.id}`} className="view-details-link">
                 Listen
               </Link>
@@ -135,25 +135,23 @@ const Home = () => {
               &times;
             </button>
             <h2>
-              Episodes for Season {selectedSeason} -{" "}
-              {
-                previews.find((preview) => preview.id === selectedShow)?.title
-              }
+              Episodes for Season {selectedSeason + 1} -{" "}
+              {previews.find((preview) => preview.id === selectedShow)?.title}
             </h2>
             <div className="episodes-list">
               {seasonEpisodes.length > 0 ? (
                 seasonEpisodes.map((episode) => (
-                  <div key={episode.id} className="episode-card">
+                  <div key={episode.id} className="episode-card"> 
                     <h3>{episode.title}</h3>
-                    <a
-                      href={episode.file}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Listen to Episode
-                    </a>
+                      <a 
+                        href={episode.file}  
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                      >
+                        Listen to Episode
+                      </a>
                   </div>
-                ))
+               ))
               ) : (
                 <p>Loading episodes...</p>
               )}

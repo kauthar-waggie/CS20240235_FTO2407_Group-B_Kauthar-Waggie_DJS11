@@ -18,11 +18,15 @@ export const fetchShow = async (id) => {
 };
 
 export const fetchSeasonEpisodes = async (showId, seasonNumber) => {
-  const response = await fetch(
-    `https://podcast-api.netlify.app/${showId}/seasons/${seasonNumber}/episodes`
-  );
-  if (!response.ok) {
-    throw new Error("Failed to fetch episodes.");
+  // Fetches the complete show details
+  const showDetails = await fetchShow(showId);
+
+  // Checks if seasons exist and find the selected season
+  const season = showDetails.seasons?.[seasonNumber];
+  if (!season) {
+    throw new Error("Season not found.");
   }
-  return await response.json();
+
+  return season.episodes;
 };
+

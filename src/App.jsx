@@ -8,7 +8,12 @@ import SeasonDetails from './SeasonDetails';
 
 const App = () => {
   return (
-    <BrowserRouter>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true, // Opt-in for state updates wrapped in React.startTransition
+        v7_relativeSplatPath: true, // Update splat route resolution
+      }}
+    >
       <div>
         <header>
           <h1>Podcast App</h1>
@@ -30,6 +35,10 @@ const App = () => {
 };
 
 export default App;
+
+
+
+
 
 
 

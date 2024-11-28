@@ -56,3 +56,6 @@ const ShowDetails = () => {
 
 export default ShowDetails;
 
+
+
+

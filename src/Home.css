@@ -252,4 +252,47 @@ h1 {
     font-size: 0.8rem;
   }
 }
-  
+
+/* heart icon */
+.heart-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  transition: transform 0.2s;
+}
+
+.heart-btn .heart-icon {
+  width: 24px;
+  height: 24px;
+  fill: #ccc; 
+  transition: fill 0.3s;
+}
+
+.heart-btn.favourited .heart-icon {
+  fill: red; 
+}
+
+.heart-btn:hover .heart-icon {
+  transform: scale(1.2);
+}
+
+
+.season-card {
+  position: relative;
+  display: inline-block;
+  width: 200px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  margin: 10px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.season-image {
+  width: 100%;
+  border-radius: 8px;
+}

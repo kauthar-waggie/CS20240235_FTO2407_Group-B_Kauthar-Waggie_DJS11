@@ -24,6 +24,19 @@ const Home = () => {
     });
   };
 
+  const toggleFavorite = (showId, seasonIndex) => {
+    const seasonKey = `${showId}-${seasonIndex}`;
+    setFavorites((prevFavorites) => {
+      if (prevFavorites.includes(seasonKey)) {
+        // Remove from favorites
+        return prevFavorites.filter((favorite) => favorite !== seasonKey);
+      } else {
+        // Add to favorites
+        return [...prevFavorites, seasonKey];
+      }
+    });
+  };
+
   // Fetch previews and extract genres
   useEffect(() => {
     fetchPreviews()
@@ -200,5 +213,6 @@ const Home = () => {
     </div>
   );
 };
+
 
 export default Home;

@@ -5,6 +5,7 @@ import ShowDetails from './ShowDetails';
 import Genre from './Genre';
 import './App.css';
 import SeasonDetails from './SeasonDetails';
+import FavouriteEpisodes from './FavouriteEpisodes';
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
             <Route path="/show/:id" element={<ShowDetails />} />
             <Route path="/genre/:id" element={<Genre />} />
             <Route path="/show/:showId/season/:seasonNumber" element={<SeasonDetails />} />
+            <Route path="/favourites" element={<FavouriteEpisodes />} /> {FavouriteEpisodes}
           </Routes>
         </main>
         <footer>

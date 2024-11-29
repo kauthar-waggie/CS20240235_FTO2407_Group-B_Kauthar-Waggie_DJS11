@@ -5,20 +5,33 @@ import { fetchGenre } from '../src/utils/api';
 const Genre = () => {
   const { id } = useParams();
   const [genre, setGenre] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchGenre(id).then(setGenre);
+    const fetchGenreData = async () => {
+      try {
+        const data = await fetchGenre(id);
+        setGenre(data);
+      } catch (err) {
+        setError('Failed to fetch genre details. Please try again.');
+      }
+    };
+
+    fetchGenreData();
   }, [id]);
 
+  if (error) return <p>{error}</p>;
   if (!genre) return <p>Loading...</p>;
 
   return (
-    <div>
+    <section>
       <h1>{genre.title}</h1>
-      {genre.showIds.map((showId) => (
-        <p key={showId}>Show ID: {showId}</p>
-      ))}
-    </div>
+      <ul>
+        {genre.showIds.map((showId) => (
+          <li key={showId}>Show ID: {showId}</li>
+        ))}
+      </ul>
+    </section>
   );
 };
 

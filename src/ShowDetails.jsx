@@ -1,54 +1,60 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchShow } from '../src/utils/api';
+//import './ShowDetails.css'; // Ensure relevant styles are added here
 
 const ShowDetails = () => {
-  const { id } = useParams();  
-  const navigate = useNavigate(); 
-  const [show, setShow] = useState(null); 
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [show, setShow] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [favourites, setFavourites] = useState([]);
+  const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
-    // Fetches the show details from the API using the show ID
-    setLoading(true);
-    setError(null);
-    fetchShow(id)
-    .then((data) => {
-      setShow(data);  // Store the show data
-    })
-    .catch((err) => {
-      setError('Failed to load show details.');
-    })
-    .finally(() => setLoading(false));
+    const loadShowDetails = async () => {
+      setLoading(true);
+      setError(null);
 
-    // Retrieve the favourites from localStorage
-    const storedFavourites = JSON.parse(localStorage.getItem('favourites')) || [];
-    setFavourites(storedFavourites);
+      try {
+        const showData = await fetchShow(id);
+        setShow(showData);
+      } catch {
+        setError('Failed to load show details.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Load the show details
+    loadShowDetails();
+
+    // Retrieve the favorites from localStorage
+    const storedFavorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    setFavorites(storedFavorites);
   }, [id]);
 
-  const handleFavouriteToggle = (episodeId, showId) => {
-    const updatedFavourites = [...favourites];
-    const favouriteIndex = updatedFavourites.findIndex(
-      (fav) => fav.episodeId === episodeId && fav.showId === showId
+  const handleFavoriteToggle = (seasonId, showId) => {
+    const updatedFavorites = [...favorites];
+    const favoriteIndex = updatedFavorites.findIndex(
+      (fav) => fav.seasonId === seasonId && fav.showId === showId
     );
 
-    if (favouriteIndex !== -1) {
-      // If already favourite, remove it
-      updatedFavourites.splice(favouriteIndex, 1);
+    if (favoriteIndex !== -1) {
+      // If already a favorite, remove it
+      updatedFavorites.splice(favoriteIndex, 1);
     } else {
-      // If not favourite, add it
-      updatedFavourites.push({ episodeId, showId });
+      // If not a favorite, add it
+      updatedFavorites.push({ seasonId, showId });
     }
 
     // Save to localStorage
-    localStorage.setItem('favourites', JSON.stringify(updatedFavourites));
-    setFavourites(updatedFavourites); // Update state
+    localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+    setFavorites(updatedFavorites); // Update state
   };
 
-  const isFavourite = (episodeId, showId) => {
-    return favourites.some((fav) => fav.episodeId === episodeId && fav.showId === showId);
+  const isFavorite = (seasonId, showId) => {
+    return favorites.some((fav) => fav.seasonId === seasonId && fav.showId === showId);
   };
 
   if (loading) return <p>Loading show details...</p>;
@@ -56,18 +62,19 @@ const ShowDetails = () => {
 
   return (
     <div className="show-details-container">
-      {/* Back to Show Button */}
+      {/* Back Button */}
       <button onClick={() => navigate(-1)} className="back-btn">
         Back
       </button>
 
+      {/* Show Details */}
       <h1>{show.title}</h1>
       <p>{show.description}</p>
 
-      {/* Season Preview Section */}
+      {/* Seasons Grid */}
       <div className="seasons-grid">
         {show.seasons.map((season, index) => (
-          <div key={season.id || index} className="season-card">  {/* Ensure season has unique key */}
+          <div key={season.id || index} className="season-card">
             <img
               src={season.image}
               alt={`Season ${index + 1}`}
@@ -76,11 +83,11 @@ const ShowDetails = () => {
             <h3>Season {index + 1}</h3>
             <p>{season.episodes.length} Episodes</p>
 
-            {/* Heart Icon for Favourites */}
+            {/* Favorite Button */}
             <button
-              className={`heart-btn ${isFavourite(season.id, show.id) ? 'favourited' : ''}`}
-              onClick={() => handleFavouriteToggle(season.id, show.id)}
-              aria-label="Favourite"
+              className={`heart-btn ${isFavorite(season.id, show.id) ? 'favorited' : ''}`}
+              onClick={() => handleFavoriteToggle(season.id, show.id)}
+              aria-label="Toggle Favorite"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -90,13 +97,12 @@ const ShowDetails = () => {
                 strokeWidth="2"
                 className="heart-icon"
               >
-                <path
-                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                ></path>
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
               </svg>
             </button>
-            
-            <button onClick={() => navigate(`/show/${id}/season/${index + 1}`)}>
+
+            {/* View Episodes Button */}
+            <button onClick={() => navigate(`/show/${id}/season/${index + 1}`)} className="view-episodes-btn">
               View Episodes
             </button>
           </div>
@@ -107,7 +113,3 @@ const ShowDetails = () => {
 };
 
 export default ShowDetails;
-
-
-
-

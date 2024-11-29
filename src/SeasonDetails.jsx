@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchShow } from '../src/utils/api';
+import { fetchSeasonEpisodes } from '../src/utils/api';
+
 
 const SeasonDetails = () => {
-  const { id, seasonNumber } = useParams();
+  const { id, seasonNumber } = useParams(); 
   const navigate = useNavigate();
   const [show, setShow] = useState(null);
   const [episodes, setEpisodes] = useState([]);
@@ -11,37 +13,28 @@ const SeasonDetails = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log('ID:', id);  
-    console.log('Season Number:', seasonNumber);
-    if (!id) {
-      setError('Show ID is required');
-      setLoading(false);
-      return;
-    }
+    const loadEpisodes = async () => {
+      try {
+        setLoading(true);
+        const episodes = await fetchSeasonEpisodes(id, parseInt(seasonNumber));
+        setEpisodes(episodes);
+      } catch (err) {
+        setError(err.message || 'Error loading episodes');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Fetch show details using the provided 'id'
-    setLoading(true);
-    setError(null);
-    fetchShow(id)
-      .then((data) => {
-        setShow(data);  // Store the show data
-        const season = data.seasons?.[seasonNumber - 1]; // Get season data based on season number
-        setEpisodes(season?.episodes || []); // Get episodes for the specific season
-      })
-      .catch((err) => {
-        setError('Error fetching show details');
-      })
-      .finally(() => setLoading(false));
-  }, [id, seasonNumber]); 
+    loadEpisodes();
+  }, [id, seasonNumber]);
+  
+  const handleGoBackToSeasons = () => {
+    navigate(`/show/${id}`); // Navigate back to the seasons list 
+  };
 
   if (loading) return <p>Loading show details...</p>;
   if (error) return <p>{error}</p>;
-
-  // Navigate back to the seasons page
-  const handleGoBackToSeasons = () => {
-    navigate(`/show/${id}`); 
-  };
-
+  
   return (
     <div>
       {/* Back to Seasons button */}
@@ -52,11 +45,21 @@ const SeasonDetails = () => {
 
       {/* Display episodes for the selected season */}
       <h2>Season {seasonNumber} Episodes</h2>
-      <ul>
-        {episodes.map((episode) => (
-          <li key={episode.id}>{episode.title}</li>
-        ))}
-      </ul>
+      {episodes.length === 0 ? (
+        <p>No episodes available.</p>
+      ) : (
+        <ul>
+          {episodes.map((episode) => (
+            <li key={episode.id}>
+              <h3>{episode.title}</h3>
+              <audio controls>
+                <source src={episode.file} type="audio/mpeg" />
+                Your browser does not support the audio element.
+              </audio>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

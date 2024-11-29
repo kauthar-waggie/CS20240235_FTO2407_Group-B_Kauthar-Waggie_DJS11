@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { GENRE_MAP } from './utils/constants';
+import { GENRE_MAP } from '../src/utils/constants';
 
 const FavoritesPage = () => {
   const [favoriteShows, setFavoriteShows] = useState([]);

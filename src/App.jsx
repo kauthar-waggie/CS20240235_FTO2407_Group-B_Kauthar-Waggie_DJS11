@@ -5,7 +5,7 @@ import ShowDetails from './ShowDetails';
 import Genre from './Genre';
 import SeasonDetails from './SeasonDetails';
 import FavoritesPage from './FavoritesPage';
-import './App.css'; // External styles
+import './App.css'; 
 
 const App = () => {
   return (

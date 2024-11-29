@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Home.css';
 import { GENRE_MAP } from '../src/utils/constants';
 import './FavoritesPage';
+import AudioPlayer from './AudioPlayer'; 
 
 const Home = () => {
   const [previews, setPreviews] = useState([]);
@@ -13,10 +14,12 @@ const Home = () => {
   const [selectedGenre, setSelectedGenre] = useState('');
   const [genres, setGenres] = useState([]);
   const [favorites, setFavorites] = useState([]);
-  const [lastWatched, setLastWatched] = useState(null); // Track last watched show
+  const [lastWatched, setLastWatched] = useState(null); 
   const navigate = useNavigate();
+  const [selectedAudio, setSelectedAudio] = useState(null);
+  
 
-  // Fetch previews and genres on component mount
+  // Fetch previews and genres 
   useEffect(() => {
     const loadPreviews = async () => {
       try {
@@ -89,7 +92,7 @@ const Home = () => {
     }
 
     setFavorites(updatedFavorites);
-    localStorage.setItem('favorites', JSON.stringify(updatedFavorites)); // Store in local storage
+    localStorage.setItem('favorites', JSON.stringify(updatedFavorites)); 
 
     console.log("Updated Favorites:", updatedFavorites);
   };
@@ -99,7 +102,7 @@ const Home = () => {
   const handleLastWatched = (showId, seasonNumber, episodeId) => {
     const lastWatchedData = { showId, seasonNumber, episodeId };
     setLastWatched(lastWatchedData);
-    localStorage.setItem('lastWatched', JSON.stringify(lastWatchedData)); // Store in local storage
+    localStorage.setItem('lastWatched', JSON.stringify(lastWatchedData));
   };
 
   return (
@@ -160,7 +163,7 @@ const Home = () => {
       <div className="podcast-grid">
         {filteredShows.length > 0 ? (
           filteredShows.map((preview) => (
-            <div key={preview.id} className="podcast-card">
+            <div key={preview.id} className="podcast-card" >
               <img
                 src={preview.image}
                 alt={`Cover of ${preview.title}`}
@@ -181,7 +184,7 @@ const Home = () => {
                 {/* Listen Button (Last Watched) */}
                 <Link
                   to={`/show/${preview.id}`}
-                  onClick={() => handleLastWatched(preview.id, 1, 1)} // Example for last watched show, season 1, episode 1
+                  onClick={() => handleLastWatched(preview.id, 1, 1)} 
                   className="view-details-link"
                 >
                   Continue Listening {lastWatched?.showId === preview.id ? '(Continue)' : ''}

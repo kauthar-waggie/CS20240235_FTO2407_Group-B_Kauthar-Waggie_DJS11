@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { fetchShow } from '../src/utils/api';
 import { fetchSeasonEpisodes } from '../src/utils/api';
 
-
 const SeasonDetails = () => {
   const { id, seasonNumber } = useParams(); 
   const navigate = useNavigate();
@@ -27,14 +26,14 @@ const SeasonDetails = () => {
 
     loadEpisodes();
   }, [id, seasonNumber]);
-  
+
   const handleGoBackToSeasons = () => {
     navigate(`/show/${id}`); // Navigate back to the seasons list 
   };
 
   if (loading) return <p>Loading show details...</p>;
   if (error) return <p>{error}</p>;
-  
+
   return (
     <div>
       {/* Back to Seasons button */}
@@ -49,8 +48,8 @@ const SeasonDetails = () => {
         <p>No episodes available.</p>
       ) : (
         <ul>
-          {episodes.map((episode) => (
-            <li key={episode.id}>
+          {episodes.map((episode, index) => (
+            <li key={episode.id || `${index}-${episode.title}`}> {/* Fallback key using index */}
               <h3>{episode.title}</h3>
               <audio controls>
                 <source src={episode.file} type="audio/mpeg" />
@@ -65,5 +64,3 @@ const SeasonDetails = () => {
 };
 
 export default SeasonDetails;
-
-

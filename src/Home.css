@@ -196,53 +196,24 @@ p {
   transform: scale(1.2);
 }
 
-.audio-player {
-  position: fixed;
-  bottom: 0;
-  left: 0;
+audio {
+  margin-top: 5px;
   width: 100%;
-  background-color: #333;
-  color: white;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 1000;
 }
-
-.controls {
-  display: flex;
-  align-items: center;
+li {
+  margin-bottom: 20px;
 }
-
 button {
-  background-color: #ff7f50;
+  background-color: #007bff;
   color: white;
   padding: 10px;
   border: none;
   cursor: pointer;
 }
-
 button:hover {
-  background-color: #ff6347;
+  background-color: #0056b3;
 }
 
-.progress-bar {
-  width: 200px;
-  height: 5px;
-  background-color: #555;
-  margin: 0 10px;
-  cursor: pointer;
-}
-
-.progress {
-  height: 100%;
-  background-color: #ff7f50;
-}
-
-.time {
-  font-size: 14px;
-}
 
 
 

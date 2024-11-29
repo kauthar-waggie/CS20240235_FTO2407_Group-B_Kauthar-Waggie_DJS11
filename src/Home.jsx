@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { fetchPreviews } from '../src/utils/api';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Home.css';
 import { GENRE_MAP } from '../src/utils/constants';
+import './FavoritesPage';
 
 const Home = () => {
   const [previews, setPreviews] = useState([]);
@@ -11,6 +12,9 @@ const Home = () => {
   const [sortOption, setSortOption] = useState('a-z');
   const [selectedGenre, setSelectedGenre] = useState('');
   const [genres, setGenres] = useState([]);
+  const [favorites, setFavorites] = useState([]);
+  const [lastWatched, setLastWatched] = useState(null); // Track last watched show
+  const navigate = useNavigate();
 
   // Fetch previews and genres on component mount
   useEffect(() => {
@@ -55,6 +59,14 @@ const Home = () => {
       case 'z-a':
         filtered.sort((a, b) => b.title.localeCompare(a.title));
         break;
+      case 'newly-updated':
+        filtered.sort((a, b) => new Date(b.updated) - new Date(a.updated)); // Sort by most recently updated
+        break;
+      case 'oldest-updated':
+        filtered.sort((a, b) => new Date(a.updated) - new Date(b.updated)); // Sort by least recently updated
+        break;
+      default:
+        break;
     }
 
     setFilteredShows(filtered);
@@ -65,6 +77,29 @@ const Home = () => {
     return genreIds
       .map((genreId) => GENRE_MAP[genreId] || 'Unknown Genre')
       .join(', ');
+  };
+
+  // Helper to handle adding/removing favorites
+  const handleFavorite = (showId) => {
+    let updatedFavorites = [...favorites];
+    if (updatedFavorites.includes(showId)) {
+      updatedFavorites = updatedFavorites.filter(id => id !== showId); // Remove from favorites
+    } else {
+      updatedFavorites.push(showId); // Add to favorites
+    }
+
+    setFavorites(updatedFavorites);
+    localStorage.setItem('favorites', JSON.stringify(updatedFavorites)); // Store in local storage
+
+    console.log("Updated Favorites:", updatedFavorites);
+  };
+
+
+  // Handle last watched episode or season
+  const handleLastWatched = (showId, seasonNumber, episodeId) => {
+    const lastWatchedData = { showId, seasonNumber, episodeId };
+    setLastWatched(lastWatchedData);
+    localStorage.setItem('lastWatched', JSON.stringify(lastWatchedData)); // Store in local storage
   };
 
   return (
@@ -110,9 +145,15 @@ const Home = () => {
           >
             <option value="a-z">Alphabetical (A-Z)</option>
             <option value="z-a">Alphabetical (Z-A)</option>
-            <option value="most-viewed">Most Viewed</option>
+            <option value="newly-updated">Newest Updated</option>
+            <option value="oldest-updated">Oldest Updated</option>
           </select>
         </div>
+      </div>
+
+      {/* Favorite Shows Button */}
+      <div className="favorites-button">
+        <button onClick={() => navigate('/favorites')}>Your Favorite Shows</button>
       </div>
 
       {/* Podcast Grid */}
@@ -131,6 +172,21 @@ const Home = () => {
                 <p>Genres: {getGenreNames(preview.genres)}</p>
                 <p>Seasons: {preview.seasons}</p>
                 <p>Last Updated: {new Date(preview.updated).toLocaleDateString()}</p>
+
+                {/* Favorite Button */}
+                <button onClick={() => handleFavorite(preview.id)}>
+                  {favorites.includes(preview.id) ? 'Unfavorite' : 'Favorite'}
+                </button>
+
+                {/* Listen Button (Last Watched) */}
+                <Link
+                  to={`/show/${preview.id}`}
+                  onClick={() => handleLastWatched(preview.id, 1, 1)} // Example for last watched show, season 1, episode 1
+                  className="view-details-link"
+                >
+                  Continue Listening {lastWatched?.showId === preview.id ? '(Continue)' : ''}
+                </Link>
+
                 <Link to={`/show/${preview.id}`} className="view-details-link">
                   Listen
                 </Link>

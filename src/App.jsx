@@ -4,7 +4,7 @@ import Home from './Home';
 import ShowDetails from './ShowDetails';
 import Genre from './Genre';
 import SeasonDetails from './SeasonDetails';
-import FavouriteEpisodes from './FavoriteEpisodes';
+import FavoritesPage from './FavoritesPage';
 import './App.css'; // External styles
 
 const App = () => {
@@ -26,7 +26,7 @@ const App = () => {
           <Route path="/genre/:id" element={<Genre />} />
 
           {/* Favorites page */}
-          <Route path="/favourites" element={<FavouriteEpisodes />} />
+          <Route path="/favorites" element={<FavoritesPage />} />
         </Routes>
       </main>
     </BrowserRouter>

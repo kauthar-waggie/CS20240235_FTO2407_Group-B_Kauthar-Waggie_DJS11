@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchShow } from '../src/utils/api';
+import { GENRE_MAP } from '../src/utils/constants';
 //import './ShowDetails.css'; // Ensure relevant styles are added here
 
 const ShowDetails = () => {
@@ -54,6 +55,7 @@ const ShowDetails = () => {
 
   if (loading) return <p>Loading show details...</p>;
   if (error) return <p>{error}</p>;
+  
 
   return (
     <div className="show-details-container">

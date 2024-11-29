@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchPreviews } from '../src/utils/api';
 import { Link } from 'react-router-dom';
 import './Home.css';
+import { GENRE_MAP } from '../src/utils/constants';
 
 const Home = () => {
   const [previews, setPreviews] = useState([]);
@@ -43,7 +44,7 @@ const Home = () => {
 
     if (selectedGenre) {
       filtered = filtered.filter((preview) =>
-        preview.genres.includes(selectedGenre)
+        preview.genres.includes(Number(selectedGenre)) // Match genre ID
       );
     }
 
@@ -54,15 +55,17 @@ const Home = () => {
       case 'z-a':
         filtered.sort((a, b) => b.title.localeCompare(a.title));
         break;
-      case 'most-viewed':
-        filtered.sort((a, b) => b.views - a.views);
-        break;
-      default:
-        break;
     }
 
     setFilteredShows(filtered);
   }, [searchTerm, selectedGenre, sortOption, previews]);
+
+   // Helper to map genre IDs to names
+   const getGenreNames = (genreIds) => {
+    return genreIds
+      .map((genreId) => GENRE_MAP[genreId] || 'Unknown Genre')
+      .join(', ');
+  };
 
   return (
     <div className="home-container">
@@ -79,8 +82,8 @@ const Home = () => {
           className="search-bar"
         />
 
-        {/* Genre Filter */}
-        <div className="genre-filter">
+         {/* Genre Filter */}
+         <div className="genre-filter">
           <label htmlFor="genre">Filter by Genre:</label>
           <select
             id="genre"
@@ -88,9 +91,9 @@ const Home = () => {
             onChange={(e) => setSelectedGenre(e.target.value)}
           >
             <option value="">All Genres</option>
-            {genres.map((genre) => (
-              <option key={genre} value={genre}>
-                {genre}
+            {genres.map((genreId) => (
+              <option key={genreId} value={genreId}>
+                {GENRE_MAP[genreId] || 'Unknown Genre'}
               </option>
             ))}
           </select>
@@ -125,7 +128,7 @@ const Home = () => {
               <div className="podcast-details">
                 <h2>{preview.title}</h2>
                 <p>{preview.description}</p>
-                <p>Genres: {preview.genres.join(', ')}</p>
+                <p>Genres: {getGenreNames(preview.genres)}</p>
                 <p>Seasons: {preview.seasons}</p>
                 <p>Last Updated: {new Date(preview.updated).toLocaleDateString()}</p>
                 <Link to={`/show/${preview.id}`} className="view-details-link">

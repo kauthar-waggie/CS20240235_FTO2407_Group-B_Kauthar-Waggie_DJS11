@@ -10,6 +10,7 @@ const SeasonDetails = () => {
   const [episodes, setEpisodes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [favourites, setFavourites] = useState([]);
 
   useEffect(() => {
     const loadEpisodes = async () => {
@@ -25,7 +26,29 @@ const SeasonDetails = () => {
     };
 
     loadEpisodes();
-  }, [id, seasonNumber]);
+
+    // Load favorites from localStorage
+    const storedFavourites = JSON.parse(localStorage.getItem('favourites')) || [];
+    setFavourites(storedFavourites);
+  }, []);
+
+  const handleFavouriteToggle = (episodeId) => {
+    const updatedFavourites = [...favourites];
+    const favouriteIndex = updatedFavourites.findIndex((fav) => fav.episodeId === episodeId);
+
+    if (favouriteIndex !== -1) {
+      updatedFavourites.splice(favouriteIndex, 1); // Remove from favorites
+    } else {
+      updatedFavourites.push({ episodeId, showId: id, seasonId: seasonNumber }); // Add to favorites
+    }
+
+    localStorage.setItem('favourites', JSON.stringify(updatedFavourites));
+    setFavourites(updatedFavourites);
+  };
+
+  const isFavourite = (episodeId) => {
+    return favourites.some((fav) => fav.episodeId === episodeId);
+  };
 
   const handleGoBackToSeasons = () => {
     navigate(`/show/${id}`); // Navigate back to the seasons list 
@@ -48,15 +71,23 @@ const SeasonDetails = () => {
         <p>No episodes available.</p>
       ) : (
         <ul>
-          {episodes.map((episode, index) => (
-            <li key={episode.id || `${index}-${episode.title}`}> {/* Fallback key using index */}
-              <h3>{episode.title}</h3>
-              <audio controls>
-                <source src={episode.file} type="audio/mpeg" />
-                Your browser does not support the audio element.
-              </audio>
-            </li>
-          ))}
+          {episodes.map((episode, index) => {
+            const episodeKey = episode.id ? episode.id : `${index}-${seasonNumber}`; // Use index if no episode.id is available
+            return (
+              <li key={episodeKey}> {/* Unique key using episode.id or index */}
+                <h3>{episode.title}</h3>
+                <audio controls>
+                  <source src={episode.file} type="audio/mpeg" />
+                  Your browser does not support the audio element.
+                </audio>
+
+                {/* Add favorite button */}
+                <button onClick={() => handleFavouriteToggle(episode.id)}>
+                  {isFavourite(episode.id) ? 'Unfavorite' : 'Favorite'}
+                </button>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

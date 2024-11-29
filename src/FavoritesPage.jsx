@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { GENRE_MAP } from '../src/utils/constants';
 
 const FavoritesPage = () => {
-  const [favoriteShows, setFavoriteShows] = useState([]);
+  const [favoriteEpisodes, setFavoriteEpisodes] = useState([]);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
-
-  const uniqueShows = [...new Map(favoriteShows.map(show => [show.id, show])).values()];
-
-  // Fetch favorite shows from localStorage or global state
+  // Fetch favorite episodes from localStorage
   useEffect(() => {
     const favoritesFromStorage = JSON.parse(localStorage.getItem('favorites')) || [];
-    setFavoriteShows(favoritesFromStorage);
+    setFavoriteEpisodes(favoritesFromStorage);
+    setLoading(false);
   }, []);
 
-  // Helper to map genre IDs to names
+  // Helper to map genre IDs to names (not needed for episodes but can be reused for shows)
   const getGenreNames = (genreIds) => {
     if (!Array.isArray(genreIds)) return 'Unknown Genre';
     return genreIds
@@ -22,35 +22,34 @@ const FavoritesPage = () => {
       .join(', ');
   };
 
-  // Check for unique ids in favoriteShows
-  useEffect(() => {
-    console.log(favoriteShows);  // Log the favoriteShows to ensure the ids are unique
-  }, [favoriteShows]);
+  // Back button handler
+  const handleGoBack = () => {
+    navigate(-1); // Navigate to the previous page
+  };
+
+  // Check for unique episodes based on episodeId (to avoid duplicate entries)
+  const uniqueEpisodes = [...new Map(favoriteEpisodes.map((ep) => [ep.episodeId, ep])).values()];
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="favorites-container">
-      <h1>Your Favorite Shows</h1>
+      <button onClick={handleGoBack}>Back</button> {/* Back button */}
+      <h1>Your Favorite Episodes</h1>
 
-      {favoriteShows.length === 0 ? (
-        <p>You have no favorite shows yet.</p>
+      {uniqueEpisodes.length === 0 ? (
+        <p>You have no favorite episodes yet.</p>
       ) : (
         <div className="favorites-grid">
-          {favoriteShows.map((show, index) => (
-            // Ensure that `key` is unique for each element
-            <div key={show.id || index} className="favorite-show-card">
-              <img src={show.image} alt={`Cover of ${show.title}`} className="show-image" />
-              <div className="show-details">
-                <h2>{show.title}</h2>
-                <p>{show.description}</p>
-                <p>Genres: {getGenreNames(show.genres)}</p>
-                <p>Seasons: {show.seasons}</p>
-                <p>Last Updated: {new Date(show.updated).toLocaleDateString()}</p>
+          {uniqueEpisodes.map((episode) => (
+            <div key={episode.episodeId} className="favorite-episode-card">
+              <h3>{episode.title}</h3>
+              <p>Show ID: {episode.showId} | Season: {episode.seasonId}</p>
 
-                {/* Listen button that links to the show details */}
-                <Link to={`/show/${show.id}`} className="view-details-link">
-                  Listen
-                </Link>
-              </div>
+              {/* Displaying more episode details */}
+              <Link to={`/show/${episode.showId}/season/${episode.seasonId}`} className="view-details-link">
+                View Episode Details
+              </Link>
             </div>
           ))}
         </div>

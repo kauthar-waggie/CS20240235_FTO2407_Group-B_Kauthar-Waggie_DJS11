@@ -6,6 +6,8 @@ import Genre from './Genre';
 import SeasonDetails from './SeasonDetails';
 import FavoritesPage from './FavoritesPage';
 import './App.css'; 
+import EpisodeDetails from './EpisodeDetails';
+
 
 const App = () => {
   return (
@@ -27,6 +29,7 @@ const App = () => {
 
           {/* Favorites page */}
           <Route path="/favorites" element={<FavoritesPage />} />
+          <Route path="/episode/:episodeId" element={<EpisodeDetails />} />
         </Routes>
       </main>
     </BrowserRouter>

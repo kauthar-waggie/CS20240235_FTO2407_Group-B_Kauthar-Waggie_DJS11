@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Home.css';
 import { GENRE_MAP } from '../src/utils/constants';
 import './FavoritesPage';
-import AudioPlayer from './AudioPlayer'; 
+import AudioPlayer from './AudioPlayer';
 
 const Home = () => {
   const [previews, setPreviews] = useState([]);
@@ -14,10 +14,9 @@ const Home = () => {
   const [selectedGenre, setSelectedGenre] = useState('');
   const [genres, setGenres] = useState([]);
   const [favorites, setFavorites] = useState([]);
-  const [lastWatched, setLastWatched] = useState(null); 
+  const [lastWatched, setLastWatched] = useState(null);
   const navigate = useNavigate();
   const [selectedAudio, setSelectedAudio] = useState(null);
-  
 
   // Fetch previews and genres 
   useEffect(() => {
@@ -37,6 +36,12 @@ const Home = () => {
     };
 
     loadPreviews();
+  }, []);
+
+  // Load favorites from localStorage
+  useEffect(() => {
+    const savedFavorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    setFavorites(savedFavorites);
   }, []);
 
   // Filter and sort shows based on user input
@@ -75,8 +80,8 @@ const Home = () => {
     setFilteredShows(filtered);
   }, [searchTerm, selectedGenre, sortOption, previews]);
 
-   // Helper to map genre IDs to names
-   const getGenreNames = (genreIds) => {
+  // Helper to map genre IDs to names
+  const getGenreNames = (genreIds) => {
     return genreIds
       .map((genreId) => GENRE_MAP[genreId] || 'Unknown Genre')
       .join(', ');
@@ -92,11 +97,10 @@ const Home = () => {
     }
 
     setFavorites(updatedFavorites);
-    localStorage.setItem('favorites', JSON.stringify(updatedFavorites)); 
+    localStorage.setItem('favorites', JSON.stringify(updatedFavorites)); // Save to localStorage
 
     console.log("Updated Favorites:", updatedFavorites);
   };
-
 
   // Handle last watched episode or season
   const handleLastWatched = (showId, seasonNumber, episodeId) => {
@@ -105,9 +109,31 @@ const Home = () => {
     localStorage.setItem('lastWatched', JSON.stringify(lastWatchedData));
   };
 
+  // Reset all progress and clear favorites and history
+  const handleResetProgress = () => {
+    const confirmReset = window.confirm('Are you sure you want to reset all your progress? This action cannot be undone.');
+
+    if (confirmReset) {
+      // Clear localStorage items
+      localStorage.removeItem('favorites');
+      localStorage.removeItem('lastWatched');
+
+      // Reset state variables
+      setFavorites([]);
+      setLastWatched(null);
+
+      alert('Your progress has been reset.');
+    }
+  };
+
   return (
     <div className="home-container">
       <h1>Shows</h1>
+
+      {/* Reset Progress Button */}
+      <div className="reset-progress-button">
+        <button onClick={handleResetProgress}>Reset All Progress</button>
+      </div>
 
       {/* Filter and Sort Section */}
       <div className="filter-container">
@@ -120,8 +146,8 @@ const Home = () => {
           className="search-bar"
         />
 
-         {/* Genre Filter */}
-         <div className="genre-filter">
+        {/* Genre Filter */}
+        <div className="genre-filter">
           <label htmlFor="genre">Filter by Genre:</label>
           <select
             id="genre"
@@ -163,7 +189,7 @@ const Home = () => {
       <div className="podcast-grid">
         {filteredShows.length > 0 ? (
           filteredShows.map((preview) => (
-            <div key={preview.id} className="podcast-card" >
+            <div key={preview.id} className="podcast-card">
               <img
                 src={preview.image}
                 alt={`Cover of ${preview.title}`}
@@ -205,4 +231,3 @@ const Home = () => {
 };
 
 export default Home;
-

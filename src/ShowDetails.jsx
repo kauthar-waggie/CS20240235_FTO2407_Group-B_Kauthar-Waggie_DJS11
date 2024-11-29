@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchShow } from '../src/utils/api';
 
+
 const ShowDetails = () => {
   const { id } = useParams();  
   const navigate = useNavigate(); 
@@ -17,7 +18,7 @@ const ShowDetails = () => {
     .then((data) => {
       setShow(data); 
     })
-    .catch(() => {
+    .catch((err) => {
       setError('Failed to load show details.');
     })
     .finally(() => setLoading(false));
@@ -29,17 +30,17 @@ const ShowDetails = () => {
   const handleFavouriteToggle = (episodeId, showId) => {
     const updatedFavourites = [...favourites];
     const favouriteIndex = updatedFavourites.findIndex(
-      (fav) => fav.episodeId === episodeId && fav.showId === showId
+      (fav) => fav.episodeId === episodeId && fav.seasonId === seasonId && fav.showId === id
     );
 
-    if (favouriteIndex !== -1) {
-      updatedFavourites.splice(favouriteIndex, 1);
+    if (favoriteIndex !== -1) {
+      updatedFavorites.splice(favoriteIndex, 1); // Remove from favorites
     } else {
-      updatedFavourites.push({ episodeId, showId });
+      updatedFavorites.push({ episodeId, seasonId, showId: id });
     }
 
-    localStorage.setItem('favourites', JSON.stringify(updatedFavourites));
-    setFavourites(updatedFavourites);
+    localStorage.setItem('episodeFavorites', JSON.stringify(updatedFavorites));
+    setFavorites(updatedFavorites);
   };
 
   const isFavourite = (episodeId, showId) => {

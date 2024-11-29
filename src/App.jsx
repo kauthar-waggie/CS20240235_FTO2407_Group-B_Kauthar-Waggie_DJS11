@@ -20,7 +20,7 @@ const App = () => {
 
           {/* Show-related pages */}
           <Route path="/show/:id" element={<ShowDetails />} />
-          <Route path="/show/:showId/season/:seasonNumber" element={<SeasonDetails />} />
+          <Route path="/show/:id/season/:seasonNumber" element={<SeasonDetails />} />  {/* Season details page */}
 
           {/* Genre-specific listing */}
           <Route path="/genre/:id" element={<Genre />} />

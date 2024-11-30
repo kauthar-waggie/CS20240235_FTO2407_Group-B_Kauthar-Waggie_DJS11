@@ -1,15 +1,17 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './Home';
-import ShowDetails from './ShowDetails';
+import ShowDetails from './components/ShowDetails';
 import Genre from './Genre';
-import SeasonDetails from './SeasonDetails';
-import FavoritesPage from './FavoritesPage';
+import SeasonDetails from './components/SeasonDetails';
+import FavoritesPage from './components/FavoritesPage';
 import './App.css'; 
-import EpisodeDetails from './EpisodeDetails';
+import EpisodeDetails from './components/EpisodeDetails';
+import AudioPlayer from './components/AudioPlayer';
 
 
 const App = () => {
+  const audioSrc = "https://podcast-api.netlify.app/placeholder-audio.mp3";
   return (
     <BrowserRouter>
       <header>
@@ -31,6 +33,8 @@ const App = () => {
           <Route path="/favorites" element={<FavoritesPage />} />
           <Route path="/episode/:episodeId" element={<EpisodeDetails />} />
         </Routes>
+        {/* Always visible audio player */}
+        <AudioPlayer audioSrc={audioSrc} />
       </main>
     </BrowserRouter>
   );

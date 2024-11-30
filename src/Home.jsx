@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { fetchPreviews } from '../src/utils/api';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import FilterAndSort from './components/FilterAndSort';
+import PodcastCard from './components/PodcastCard'; 
+import { GENRE_MAP } from './utils/constants';
+
+
 import './Home.css';
-import { GENRE_MAP } from '../src/utils/constants';
-import './FavoritesPage';
-import AudioPlayer from './AudioPlayer';
 
 const Home = () => {
   const [previews, setPreviews] = useState([]);
@@ -16,9 +18,8 @@ const Home = () => {
   const [favorites, setFavorites] = useState([]);
   const [lastWatched, setLastWatched] = useState(null);
   const navigate = useNavigate();
-  const [selectedAudio, setSelectedAudio] = useState(null);
 
-  // Fetch previews and genres 
+  // Fetch previews and genres
   useEffect(() => {
     const loadPreviews = async () => {
       try {
@@ -28,38 +29,61 @@ const Home = () => {
         setFilteredShows(sortedData);
 
         // Extract unique genres
-        const uniqueGenres = [...new Set(data.flatMap((show) => show.genres))];
-        setGenres(uniqueGenres);
+        setGenres([...new Set(data.flatMap((show) => show.genres))]);
+
+        // Load favorites and last watched from localStorage
+        setFavorites(JSON.parse(localStorage.getItem('favorites')) || []);
+        setLastWatched(JSON.parse(localStorage.getItem('lastWatched')) || null);
       } catch (error) {
         console.error('Error fetching previews:', error);
       }
     };
+    
 
     loadPreviews();
   }, []);
 
-  // Load favorites from localStorage
-  useEffect(() => {
-    const savedFavorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    setFavorites(savedFavorites);
-  }, []);
+  // Reset all progress and clear favorites and history
+  const handleResetProgress = () => {
+    const confirmReset = window.confirm('Are you sure you want to reset all your progress? This action cannot be undone.');
 
-  // Filter and sort shows based on user input
+    if (confirmReset) {
+      localStorage.removeItem('lastWatched');
+
+      setFavorites([]);
+      setLastWatched(null);
+
+      alert('Your progress has been reset.');
+    }
+  };
+
+  /// Handle favorite toggle
+  const handleFavorite = (showId) => {
+    let updatedFavorites = [...favorites];
+    if (updatedFavorites.includes(showId)) {
+      updatedFavorites = updatedFavorites.filter(id => id !== showId); // Remove from favorites
+    } else {
+      updatedFavorites.push(showId); // Add to favorites
+    }
+    setFavorites(updatedFavorites);
+    localStorage.setItem('favorites', JSON.stringify(updatedFavorites)); 
+  };
+
+
+  // Filter and sort shows
   useEffect(() => {
     let filtered = [...previews];
-
     if (searchTerm) {
       filtered = filtered.filter((preview) =>
         preview.title.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-
     if (selectedGenre) {
       filtered = filtered.filter((preview) =>
-        preview.genres.includes(Number(selectedGenre)) // Match genre ID
+        preview.genres.includes(Number(selectedGenre))
       );
     }
-
+    // Sorting
     switch (sortOption) {
       case 'a-z':
         filtered.sort((a, b) => a.title.localeCompare(b.title));
@@ -68,159 +92,69 @@ const Home = () => {
         filtered.sort((a, b) => b.title.localeCompare(a.title));
         break;
       case 'newly-updated':
-        filtered.sort((a, b) => new Date(b.updated) - new Date(a.updated)); // Sort by most recently updated
+        filtered.sort((a, b) => new Date(b.updated) - new Date(a.updated));
         break;
       case 'oldest-updated':
-        filtered.sort((a, b) => new Date(a.updated) - new Date(b.updated)); // Sort by least recently updated
+        filtered.sort((a, b) => new Date(a.updated) - new Date(b.updated));
         break;
       default:
         break;
     }
-
     setFilteredShows(filtered);
   }, [searchTerm, selectedGenre, sortOption, previews]);
 
-  // Helper to map genre IDs to names
-  const getGenreNames = (genreIds) => {
-    return genreIds
-      .map((genreId) => GENRE_MAP[genreId] || 'Unknown Genre')
-      .join(', ');
-  };
-
-  // Helper to handle adding/removing favorites
-  const handleFavorite = (showId) => {
-    let updatedFavorites = [...favorites];
-    if (updatedFavorites.includes(showId)) {
-      updatedFavorites = updatedFavorites.filter(id => id !== showId); // Remove from favorites
-    } else {
-      updatedFavorites.push(showId); // Add to favorites
-    }
-
+  // Toggle favorite
+  const handleFavoriteToggle = (id) => {
+    const updatedFavorites = favorites.includes(id)
+      ? favorites.filter((favId) => favId !== id)
+      : [...favorites, id];
     setFavorites(updatedFavorites);
-    localStorage.setItem('favorites', JSON.stringify(updatedFavorites)); // Save to localStorage
-
-    console.log("Updated Favorites:", updatedFavorites);
+    localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
   };
 
-  // Handle last watched episode or season
-  const handleLastWatched = (showId, seasonNumber, episodeId) => {
-    const lastWatchedData = { showId, seasonNumber, episodeId };
-    setLastWatched(lastWatchedData);
-    localStorage.setItem('lastWatched', JSON.stringify(lastWatchedData));
+  // Continue listening
+  const handleContinueListening = (id, season, episode) => {
+    setLastWatched({ id, season, episode });
+    localStorage.setItem('lastWatched', JSON.stringify({ id, season, episode }));
   };
 
-  // Reset all progress and clear favorites and history
-  const handleResetProgress = () => {
-    const confirmReset = window.confirm('Are you sure you want to reset all your progress? This action cannot be undone.');
-
-    if (confirmReset) {
-      // Clear localStorage items
-      localStorage.removeItem('favorites');
-      localStorage.removeItem('lastWatched');
-
-      // Reset state variables
-      setFavorites([]);
-      setLastWatched(null);
-
-      alert('Your progress has been reset.');
-    }
+  // Helper to map genres
+  const getGenreNames = (genreIds) => {
+    return genreIds.map(id => GENRE_MAP[id] || 'Unknown');
   };
+  
 
   return (
     <div className="home-container">
-      <h1>Shows</h1>
-
       {/* Reset Progress Button */}
       <div className="reset-progress-button">
         <button onClick={handleResetProgress}>Reset All Progress</button>
       </div>
-
-      {/* Filter and Sort Section */}
-      <div className="filter-container">
-        {/* Search Bar */}
-        <input
-          type="text"
-          placeholder="Search for a show..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-bar"
-        />
-
-        {/* Genre Filter */}
-        <div className="genre-filter">
-          <label htmlFor="genre">Filter by Genre:</label>
-          <select
-            id="genre"
-            value={selectedGenre}
-            onChange={(e) => setSelectedGenre(e.target.value)}
-          >
-            <option value="">All Genres</option>
-            {genres.map((genreId) => (
-              <option key={genreId} value={genreId}>
-                {GENRE_MAP[genreId] || 'Unknown Genre'}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Sort Options */}
-        <div className="sort-container">
-          <label htmlFor="sort">Sort By:</label>
-          <select
-            id="sort"
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
-            className="sort-dropdown"
-          >
-            <option value="a-z">Alphabetical (A-Z)</option>
-            <option value="z-a">Alphabetical (Z-A)</option>
-            <option value="newly-updated">Newest Updated</option>
-            <option value="oldest-updated">Oldest Updated</option>
-          </select>
-        </div>
-      </div>
-
       {/* Favorite Shows Button */}
       <div className="favorites-button">
         <button onClick={() => navigate('/favorites')}>Your Favorite Shows</button>
       </div>
-
-      {/* Podcast Grid */}
+      <h1>Shows</h1>
+      <FilterAndSort
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        selectedGenre={selectedGenre}
+        setSelectedGenre={setSelectedGenre}
+        sortOption={sortOption}
+        setSortOption={setSortOption}
+        genres={genres}
+      />
       <div className="podcast-grid">
         {filteredShows.length > 0 ? (
-          filteredShows.map((preview) => (
-            <div key={preview.id} className="podcast-card">
-              <img
-                src={preview.image}
-                alt={`Cover of ${preview.title}`}
-                className="podcast-image"
-              />
-              <div className="podcast-details">
-                <h2>{preview.title}</h2>
-                <p>{preview.description}</p>
-                <p>Genres: {getGenreNames(preview.genres)}</p>
-                <p>Seasons: {preview.seasons}</p>
-                <p>Last Updated: {new Date(preview.updated).toLocaleDateString()}</p>
-
-                {/* Favorite Button */}
-                <button onClick={() => handleFavorite(preview.id)}>
-                  {favorites.includes(preview.id) ? 'Unfavorite' : 'Favorite'}
-                </button>
-
-                {/* Listen Button (Last Watched) */}
-                <Link
-                  to={`/show/${preview.id}`}
-                  onClick={() => handleLastWatched(preview.id, 1, 1)} 
-                  className="view-details-link"
-                >
-                  Continue Listening {lastWatched?.showId === preview.id ? '(Continue)' : ''}
-                </Link>
-
-                <Link to={`/show/${preview.id}`} className="view-details-link">
-                  Listen
-                </Link>
-              </div>
-            </div>
+          filteredShows.map((show) => (
+            <PodcastCard
+              key={show.id}
+              podcast={show}
+              isFavorite={favorites.includes(show.id)}
+              onFavoriteToggle={handleFavoriteToggle}
+              getGenreNames={getGenreNames}
+              onContinueListening={handleContinueListening}
+            />
           ))
         ) : (
           <p>No shows found. Try adjusting your filters or search term.</p>

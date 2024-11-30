@@ -11,7 +11,13 @@ h1 {
   text-align: center;
   font-size: 2rem;
   margin: 20px 0;
+  padding: 20px;
+  background: linear-gradient(to right, #cbbbe2, #f34223);
+  color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 
 button {
   cursor: pointer;
@@ -223,25 +229,6 @@ button:hover {
   background-color: #0056b3;
 }
 
-.progress-bar {
-  width: 100%;
-  height: 10px;
-  background-color: #ddd;
-  border-radius: 5px;
-  cursor: pointer;
-  margin: 10px 0;
-}
-
-.progress {
-  height: 100%;
-  background-color: #007bff;
-  border-radius: 5px;
-}
-
-.time-display {
-  font-size: 14px;
-  color: #555;
-}
 
 .favorite-show-card {
   display: flex;
@@ -314,7 +301,7 @@ button {
 }
 
 button:hover {
-  background-color: #e5533d;
+  background-color: #ecca32;
 }
 
 .audio-player {
@@ -331,6 +318,7 @@ button:hover {
   align-items: center;
   z-index: 1000;
   border-radius: 30px;
+  margin-top: 110px;
 }
 
 .audio-player .controls {
